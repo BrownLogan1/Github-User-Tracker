@@ -35,14 +35,28 @@ def main():
         load_api(username=args.username)
         data = save_api_data()
         push_count = {}
-        
+        issue_count = {}
+#Finding repo commits
         for i in data:
             if i['type'] == "PushEvent":
                 repo_name = i['repo']['name']
 
                 push_count[repo_name] = push_count.get(repo_name, 0) + 1
         for repo, count in push_count.items():
-            print(f"{args.username} pushed {red}{count}{reset} updates to {green}{repo}{reset}")
+            if count > 1:
+                print(f"{args.username} pushed {red}{count}{reset} commits to {green}{repo}{reset}")
+            else:
+                print(f"{args.username} pushed {red}{count}{reset} commit to {green}{repo}{reset}")
+
+#Finding issues
+        for i in data:
+            if i['type'] == "IssuesEvent":
+                issue_count[repo_name] = issue_count.get(repo_name, 0) + 1
+        for repo, count in issue_count.items():
+            if count > 1:
+                print(f"{args.username} opened {red}{count}{reset} new issue's in {green}{repo}{reset}")
+            else:
+                print(f"{args.username} opened {red}{count}{reset} new issue in {green}{repo}{reset}")
 
 if __name__ == "__main__":
     main()
