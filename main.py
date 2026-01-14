@@ -8,12 +8,17 @@ red = "\033[31m"
 reset = "\033[0m"
 
 def load_api(username):
-    with urllib.request.urlopen(f'https://api.github.com/users/{username}/events') as response:
-        html_response = response.read()
+    try: 
+        with urllib.request.urlopen(f'https://api.github.com/users/{username}/events') as response:
+            html_response = response.read()
 
-    with open("user_data.json", "w") as f:
-        json_data = json.loads(html_response.decode("utf-8"))
-        json.dump(json_data, f, indent=2)
+        with open("user_data.json", "w") as f:
+            json_data = json.loads(html_response.decode("utf-8"))
+            json.dump(json_data, f, indent=2)
+#Error Handling
+    except urllib.error.HTTPError:
+        print(f"{red}Username Not Found{reset}")
+        return None
 
 def save_api_data():
     with open('user_data.json', 'r') as f:
@@ -32,7 +37,8 @@ def main():
 
 #FIND
     if args.command == "find":
-        load_api(username=args.username)
+        if load_api(username=args.username) == None:
+            return
         data = save_api_data()
         push_count = {}
         issue_count = {}
